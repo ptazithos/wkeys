@@ -1,5 +1,7 @@
 use wayland_client::{protocol::wl_keyboard::KeyState, Connection, EventQueue};
 
+use crate::service::KeyboardHandle;
+
 use super::session::SessionState;
 
 pub struct VirtualKeyboard {
@@ -33,15 +35,17 @@ impl VirtualKeyboard {
             event_queue: event_queue,
         }
     }
+}
 
-    pub fn key_press(&mut self, key: evdev::Key) {
+impl KeyboardHandle for VirtualKeyboard {
+    fn key_press(&mut self, key: evdev::Key) {
         if let Some(keyboard) = &self.session_state.keyboard {
             keyboard.key(0, key.code().into(), KeyState::Pressed.into());
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
     }
 
-    pub fn key_release(&mut self, key: evdev::Key) {
+    fn key_release(&mut self, key: evdev::Key) {
         if let Some(keyboard) = &self.session_state.keyboard {
             keyboard.key(0, key.code().into(), KeyState::Released.into());
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
