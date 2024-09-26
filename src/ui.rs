@@ -1,4 +1,5 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
+use gtk::prelude::{BoxExt, ButtonExt, OrientableExt};
+use gtk4_layer_shell::{Edge, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 use tracing::info;
 
@@ -23,9 +24,15 @@ impl SimpleComponent for UIModel {
 
     view! {
         gtk::Window {
-            set_title: Some("Simple app"),
-            set_default_width: 300,
-            set_default_height: 100,
+            init_layer_shell: (),
+            set_layer: Layer::Overlay,
+
+            set_anchor: (Edge::Left, true),
+            set_anchor: (Edge::Right, true),
+            set_anchor: (Edge::Top, false),
+            set_anchor: (Edge::Bottom, true),
+
+
 
             gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
@@ -33,11 +40,11 @@ impl SimpleComponent for UIModel {
                 set_margin_all: 5,
 
                 gtk::Button {
-                    set_label: "Increment",
+                    set_label: "Key Press",
                     connect_clicked => UIMessage::Press
                 },
 
-                gtk::Button::with_label("Decrement") {
+                gtk::Button::with_label("Key Release") {
                     connect_clicked => UIMessage::Release
                 },
             }
