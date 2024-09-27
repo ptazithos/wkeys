@@ -1,4 +1,3 @@
-use gtk::glib::clone;
 use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt};
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
@@ -119,11 +118,11 @@ impl SimpleComponent for UIModel {
         match msg {
             UIMessage::Press => {
                 info!("Press");
-                self.keyboard_handle.key_press(evdev::Key::KEY_A);
+                self.keyboard_handle.key_press(evdev::Key::KEY_GRAVE);
             }
             UIMessage::Release => {
                 info!("Release");
-                self.keyboard_handle.key_release(evdev::Key::KEY_A);
+                self.keyboard_handle.key_release(evdev::Key::KEY_GRAVE);
             }
         }
     }
