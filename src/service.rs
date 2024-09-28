@@ -8,13 +8,13 @@ pub trait KeyboardHandle {
     fn key_release(&mut self, key: evdev::Key);
 }
 
-pub struct AppService {
+pub struct AppService<M: KeyboardHandle + 'static> {
     ui_handle: RelmApp<UIMessage>,
-    keyboard_handle: Option<Box<dyn KeyboardHandle>>,
+    keyboard_handle: Option<M>,
 }
 
-impl AppService {
-    pub fn new(keyboard_handle: Box<dyn KeyboardHandle>) -> Self {
+impl<M: KeyboardHandle + 'static> AppService<M> {
+    pub fn new(keyboard_handle: M) -> Self {
         let ui = RelmApp::new("net.pithos.wkeys");
         Self {
             ui_handle: ui,
@@ -24,7 +24,7 @@ impl AppService {
 
     pub fn run(mut self) {
         if let Some(keyboard_handle) = self.keyboard_handle.take() {
-            self.ui_handle.run::<UIModel>(keyboard_handle);
+            self.ui_handle.run::<UIModel>(Box::new(keyboard_handle));
         } else {
             error!("No keyboard handle");
         }
