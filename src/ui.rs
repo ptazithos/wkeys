@@ -1,3 +1,7 @@
+use gdk4::{
+    prelude::{DisplayExt, ListModelExtManual, MonitorExt},
+    Monitor,
+};
 use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt};
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
@@ -25,41 +29,27 @@ impl SimpleComponent for UIModel {
     type Widgets = ();
 
     fn init_root() -> Self::Root {
+        // Get the height of the smallest monitor.
+        let screen_height = if let Some(display) = gdk4::Display::default() {
+            let monitors = display.monitors();
+
+            monitors
+                .iter::<Monitor>()
+                .map(|monitor| {
+                    let monitor = monitor.unwrap();
+                    monitor.geometry().height()
+                })
+                .min()
+                .unwrap_or(1080)
+        } else {
+            1080
+        };
+
+        // Create a window with a height of 1/3 of the smallest monitor.
         gtk::Window::builder()
-            .title("Simple app")
-            .default_width(300)
-            .default_height(100)
+            .height_request(screen_height / 3)
             .build()
     }
-
-    // view! {
-    //     gtk::Window {
-    //         init_layer_shell: (),
-    //         set_layer: Layer::Overlay,
-
-    //         set_anchor: (Edge::Left, true),
-    //         set_anchor: (Edge::Right, true),
-    //         set_anchor: (Edge::Top, false),
-    //         set_anchor: (Edge::Bottom, true),
-
-    //         gtk::Box {
-    //             set_orientation: gtk::Orientation::Horizontal,
-    //             set_valign(gtk::Align::Center),
-    //             set_spacing: 5,
-    //             set_margin_all: 5,
-
-    //             gtk::Button {
-    //                 set_label: "Press",
-    //                 connect_clicked => UIMessage::Press
-
-    //             },
-
-    //             gtk::Button::with_label("Release") {
-    //                 connect_clicked => UIMessage::Release
-    //             },
-    //         }
-    //     }
-    // }
 
     // Initialize the UI.
     fn init(
