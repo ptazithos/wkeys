@@ -17,7 +17,7 @@ fn main() {
 
     let keyboard = VirtualKeyboard::new();
 
-    // keyboard.key_press(evdev::Key::KEY_A);
+    // keyboard.key_press(evdev::Key::KEY_A);   
     // keyboard.key_release(evdev::Key::KEY_A);
 
     let app_service = AppService::new(keyboard);
