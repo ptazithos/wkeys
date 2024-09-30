@@ -8,10 +8,11 @@ use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent
 
 use tracing::info;
 
-use crate::service::KeyboardHandle;
+use crate::{layout::parse::LayoutDefinition, service::KeyboardHandle};
 
 pub struct UIModel {
     keyboard_handle: Box<dyn KeyboardHandle>,
+    keyboard_layout: LayoutDefinition,
 }
 
 #[derive(Debug)]
@@ -21,7 +22,7 @@ pub enum UIMessage {
 }
 
 impl SimpleComponent for UIModel {
-    type Init = Box<dyn KeyboardHandle>;
+    type Init = (Box<dyn KeyboardHandle>, LayoutDefinition);
 
     type Input = UIMessage;
     type Output = ();
@@ -72,7 +73,8 @@ impl SimpleComponent for UIModel {
         }
 
         let model = UIModel {
-            keyboard_handle: handle,
+            keyboard_handle: handle.0,
+            keyboard_layout: handle.1,
         };
 
         let vbox = gtk::Box::builder()

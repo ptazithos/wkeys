@@ -1,7 +1,9 @@
 use relm4::RelmApp;
-use tracing::error;
 
-use crate::ui::{UIMessage, UIModel};
+use crate::{
+    layout::parse::LayoutDefinition,
+    ui::{UIMessage, UIModel},
+};
 
 pub trait KeyboardHandle {
     fn key_press(&mut self, key: evdev::Key);
@@ -10,23 +12,22 @@ pub trait KeyboardHandle {
 
 pub struct AppService<M: KeyboardHandle + 'static> {
     ui_handle: RelmApp<UIMessage>,
-    keyboard_handle: Option<M>,
+    keyboard_handle: M,
+    layout_definition: LayoutDefinition,
 }
 
 impl<M: KeyboardHandle + 'static> AppService<M> {
-    pub fn new(keyboard_handle: M) -> Self {
+    pub fn new(keyboard_handle: M, layout_definition: LayoutDefinition) -> Self {
         let ui = RelmApp::new("net.pithos.wkeys");
         Self {
             ui_handle: ui,
-            keyboard_handle: Some(keyboard_handle),
+            keyboard_handle,
+            layout_definition,
         }
     }
 
-    pub fn run(mut self) {
-        if let Some(keyboard_handle) = self.keyboard_handle.take() {
-            self.ui_handle.run::<UIModel>(Box::new(keyboard_handle));
-        } else {
-            error!("No keyboard handle");
-        }
+    pub fn run(self) {
+        self.ui_handle
+            .run::<UIModel>((Box::new(self.keyboard_handle), self.layout_definition));
     }
 }
