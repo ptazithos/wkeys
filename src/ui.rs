@@ -12,7 +12,6 @@ use crate::{layout::parse::LayoutDefinition, service::KeyboardHandle};
 
 pub struct UIModel {
     keyboard_handle: Box<dyn KeyboardHandle>,
-    keyboard_layout: LayoutDefinition,
 }
 
 #[derive(Debug)]
@@ -74,31 +73,39 @@ impl SimpleComponent for UIModel {
 
         let model = UIModel {
             keyboard_handle: handle.0,
-            keyboard_layout: handle.1,
         };
 
-        let vbox = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
+        window.emit_enable_debugging(true);
+
+        let container = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
             .spacing(5)
             .build();
 
-        let inc_button = gtk::Button::with_label("Press");
-        let dec_button = gtk::Button::with_label("Release");
+        window.set_child(Some(&container));
+        container.set_margin_all(5);
+        container.set_align(gtk::Align::Center);
 
-        window.set_child(Some(&vbox));
-        vbox.set_margin_all(5);
-        vbox.set_align(gtk::Align::Center);
-        vbox.append(&inc_button);
-        vbox.append(&dec_button);
+        let keyboard_definition = handle.1;
+        keyboard_definition.layout.iter().for_each(|row| {
+            let row_container = gtk::Box::builder()
+                .orientation(gtk::Orientation::Horizontal)
+                .spacing(5)
+                .build();
 
-        let inc_sender = sender.clone();
-        inc_button.connect_clicked(move |_| {
-            inc_sender.input(UIMessage::Press);
-        });
+            row.iter().for_each(|key| {
+                let button = gtk::Button::builder()
+                    .label(format!(
+                        "{:?} {:?}",
+                        key.bottom_legend.clone().unwrap_or_default(),
+                        key.top_legend.clone().unwrap_or_default()
+                    ))
+                    .build();
 
-        let dec_sender = sender.clone();
-        dec_button.connect_clicked(move |_| {
-            dec_sender.input(UIMessage::Release);
+                row_container.append(&button);
+            });
+
+            container.append(&row_container);
         });
 
         let widgets = ();
