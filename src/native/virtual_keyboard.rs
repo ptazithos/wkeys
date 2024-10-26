@@ -7,6 +7,8 @@ use super::session::SessionState;
 pub struct VirtualKeyboard {
     session_state: SessionState,
     event_queue: EventQueue<SessionState>,
+    modifiers: u32,
+    locks: u32,
 }
 
 impl VirtualKeyboard {
@@ -33,6 +35,8 @@ impl VirtualKeyboard {
         Self {
             session_state: state,
             event_queue: event_queue,
+            modifiers: 0,
+            locks: 0,
         }
     }
 }
@@ -52,32 +56,36 @@ impl KeyboardHandle for VirtualKeyboard {
         }
     }
 
-    fn set_mod(&mut self, key: evdev::Key) {
+    fn append_mod(&mut self, key: evdev::Key) {
+        let mod_code = Self::map_mod_key(key);
+        self.modifiers |= mod_code;
+
+        self.update_state();
+    }
+
+    fn remove_mod(&mut self, key: evdev::Key) {
+        let mod_code = Self::map_mod_key(key);
+        self.modifiers &= !mod_code;
+
+        self.update_state();
+    }
+}
+
+impl VirtualKeyboard {
+    fn update_state(&mut self) {
         if let Some(keyboard) = &self.session_state.keyboard {
-            let mod_code = {
-                match key {
-                    evdev::Key::KEY_LEFTCTRL
-                    | evdev::Key::KEY_LEFTMETA
-                    | evdev::Key::KEY_RIGHTMETA
-                    | evdev::Key::KEY_RIGHTCTRL => 4,
-
-                    evdev::Key::KEY_LEFTSHIFT | evdev::Key::KEY_RIGHTSHIFT => 1,
-                    evdev::Key::KEY_LEFTALT | evdev::Key::KEY_RIGHTALT => 8,
-
-                    _ => 0,
-                }
-            };
-            println!("mod_code: {}", mod_code);
-
-            keyboard.modifiers(mod_code, 0, 0, 0);
+            keyboard.modifiers(self.modifiers, 0, self.locks, 0);
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
     }
 
-    fn remove_mod(&mut self) {
-        if let Some(keyboard) = &self.session_state.keyboard {
-            keyboard.modifiers(0, 0, 0, 0);
-            self.event_queue.roundtrip(&mut self.session_state).unwrap();
+    fn map_mod_key(key: evdev::Key) -> u32 {
+        match key {
+            evdev::Key::KEY_LEFTCTRL | evdev::Key::KEY_RIGHTCTRL => 4,
+            evdev::Key::KEY_LEFTMETA | evdev::Key::KEY_RIGHTMETA => 4,
+            evdev::Key::KEY_LEFTSHIFT | evdev::Key::KEY_RIGHTSHIFT => 1,
+            evdev::Key::KEY_LEFTALT | evdev::Key::KEY_RIGHTALT => 8,
+            _ => 0,
         }
     }
 }

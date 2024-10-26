@@ -17,7 +17,7 @@ pub enum UIMessage {
     ButtonPress(u16),
     ButtonRelease(u16),
     ModPress(u16),
-    ModRelease,
+    ModRelease(u16),
 }
 
 impl SimpleComponent for UIModel {
@@ -118,7 +118,7 @@ impl SimpleComponent for UIModel {
                         if btn.is_active() {
                             button_sender.input(UIMessage::ModPress(scan_code));
                         } else {
-                            button_sender.input(UIMessage::ModRelease);
+                            button_sender.input(UIMessage::ModRelease(scan_code));
                         }
                     });
 
@@ -162,10 +162,10 @@ impl SimpleComponent for UIModel {
                 self.keyboard_handle.key_release(evdev::Key::new(scan_code));
             }
             UIMessage::ModPress(scan_code) => {
-                self.keyboard_handle.set_mod(evdev::Key::new(scan_code));
+                self.keyboard_handle.append_mod(evdev::Key::new(scan_code));
             }
-            UIMessage::ModRelease => {
-                self.keyboard_handle.remove_mod();
+            UIMessage::ModRelease(scan_code) => {
+                self.keyboard_handle.remove_mod(evdev::Key::new(scan_code));
             }
         }
     }
