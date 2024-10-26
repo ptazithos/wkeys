@@ -29,7 +29,7 @@ layout = [
         { top_legend = 'P', scan_code = 25 },
         { top_legend = '{', bottom_legend = '[', scan_code = 26 },
         { top_legend = '}', bottom_legend = ']', scan_code = 27 },
-        { top_legend = '|', bottom_legend = '\', scan_code = 43 },
+        { top_legend = '|', bottom_legend = '\', scan_code = 43, width = 1.5 },
     ],
     [
         { top_legend = 'Caps Lock', scan_code = 58, width = 1.75 },
