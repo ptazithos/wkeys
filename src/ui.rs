@@ -6,7 +6,10 @@ use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
-use crate::{layout::parse::LayoutDefinition, service::KeyboardHandle};
+use crate::{
+    layout::parse::{KeyType, LayoutDefinition},
+    service::KeyboardHandle,
+};
 
 pub struct UIModel {
     keyboard_handle: Box<dyn KeyboardHandle>,
@@ -18,6 +21,8 @@ pub enum UIMessage {
     ButtonRelease(u16),
     ModPress(u16),
     ModRelease(u16),
+    LockPress(u16),
+    LockRelease(u16),
 }
 
 impl SimpleComponent for UIModel {
@@ -102,50 +107,75 @@ impl SimpleComponent for UIModel {
                 let width =
                     (key.width.unwrap_or(1.0) * f32::from(geometry_unit as u16)).round() as i32;
 
-                if key.is_mod_key() {
-                    let toggle = gtk::ToggleButton::builder()
-                        .label(format!(
-                            "{} {}",
-                            key.bottom_legend.clone().unwrap_or_default(),
-                            key.top_legend.clone().unwrap_or_default()
-                        ))
-                        .width_request(width)
-                        .height_request(geometry_unit)
-                        .build();
+                match key.key_type() {
+                    KeyType::Mod => {
+                        let toggle = gtk::ToggleButton::builder()
+                            .label(format!(
+                                "{} {}",
+                                key.bottom_legend.clone().unwrap_or_default(),
+                                key.top_legend.clone().unwrap_or_default()
+                            ))
+                            .width_request(width)
+                            .height_request(geometry_unit)
+                            .build();
 
-                    let button_sender = sender.clone();
-                    toggle.connect_toggled(move |btn| {
-                        if btn.is_active() {
-                            button_sender.input(UIMessage::ModPress(scan_code));
-                        } else {
-                            button_sender.input(UIMessage::ModRelease(scan_code));
-                        }
-                    });
+                        let button_sender = sender.clone();
+                        toggle.connect_toggled(move |btn| {
+                            if btn.is_active() {
+                                button_sender.input(UIMessage::ModPress(scan_code));
+                            } else {
+                                button_sender.input(UIMessage::ModRelease(scan_code));
+                            }
+                        });
 
-                    row_container.append(&toggle);
-                } else {
-                    let button = gtk::Button::builder()
-                        .label(format!(
-                            "{} {}",
-                            key.bottom_legend.clone().unwrap_or_default(),
-                            key.top_legend.clone().unwrap_or_default()
-                        ))
-                        .width_request(width)
-                        .height_request(geometry_unit)
-                        .build();
+                        row_container.append(&toggle);
+                    }
+                    KeyType::Lock => {
+                        let toggle = gtk::ToggleButton::builder()
+                            .label(format!(
+                                "{} {}",
+                                key.bottom_legend.clone().unwrap_or_default(),
+                                key.top_legend.clone().unwrap_or_default()
+                            ))
+                            .width_request(width)
+                            .height_request(geometry_unit)
+                            .build();
 
-                    let button_sender = sender.clone();
+                        let button_sender = sender.clone();
+                        toggle.connect_toggled(move |btn| {
+                            if btn.is_active() {
+                                button_sender.input(UIMessage::LockPress(scan_code));
+                            } else {
+                                button_sender.input(UIMessage::LockRelease(scan_code));
+                            }
+                        });
 
-                    button.connect_clicked(move |_btn| {
-                        button_sender.input(UIMessage::ButtonPress(scan_code));
-                        button_sender.input(UIMessage::ButtonRelease(scan_code));
-                    });
+                        row_container.append(&toggle);
+                    }
+                    KeyType::Normal => {
+                        let button = gtk::Button::builder()
+                            .label(format!(
+                                "{} {}",
+                                key.bottom_legend.clone().unwrap_or_default(),
+                                key.top_legend.clone().unwrap_or_default()
+                            ))
+                            .width_request(width)
+                            .height_request(geometry_unit)
+                            .build();
 
-                    row_container.append(&button);
-                };
+                        let button_sender = sender.clone();
+
+                        button.connect_clicked(move |_btn| {
+                            button_sender.input(UIMessage::ButtonPress(scan_code));
+                            button_sender.input(UIMessage::ButtonRelease(scan_code));
+                        });
+
+                        row_container.append(&button);
+                    }
+                }
+
+                container.append(&row_container);
             });
-
-            container.append(&row_container);
         });
 
         let widgets = ();
@@ -166,6 +196,12 @@ impl SimpleComponent for UIModel {
             }
             UIMessage::ModRelease(scan_code) => {
                 self.keyboard_handle.remove_mod(evdev::Key::new(scan_code));
+            }
+            UIMessage::LockPress(scan_code) => {
+                self.keyboard_handle.append_lock(evdev::Key::new(scan_code));
+            }
+            UIMessage::LockRelease(scan_code) => {
+                self.keyboard_handle.remove_lock(evdev::Key::new(scan_code));
             }
         }
     }

@@ -69,6 +69,20 @@ impl KeyboardHandle for VirtualKeyboard {
 
         self.update_state();
     }
+
+    fn append_lock(&mut self, key: evdev::Key) {
+        let lock_code = Self::map_lock_key(key);
+        self.locks |= lock_code;
+
+        self.update_state();
+    }
+
+    fn remove_lock(&mut self, key: evdev::Key) {
+        let lock_code = Self::map_lock_key(key);
+        self.locks &= !lock_code;
+
+        self.update_state();
+    }
 }
 
 impl VirtualKeyboard {
@@ -85,6 +99,15 @@ impl VirtualKeyboard {
             evdev::Key::KEY_LEFTMETA | evdev::Key::KEY_RIGHTMETA => 4,
             evdev::Key::KEY_LEFTSHIFT | evdev::Key::KEY_RIGHTSHIFT => 1,
             evdev::Key::KEY_LEFTALT | evdev::Key::KEY_RIGHTALT => 8,
+            _ => 0,
+        }
+    }
+
+    fn map_lock_key(key: evdev::Key) -> u32 {
+        match key {
+            evdev::Key::KEY_CAPSLOCK => 2,
+            evdev::Key::KEY_NUMLOCK => 256,
+            evdev::Key::KEY_SCROLLLOCK => 32768,
             _ => 0,
         }
     }

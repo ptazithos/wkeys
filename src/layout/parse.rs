@@ -8,8 +8,24 @@ pub struct KeyDefinition {
     pub width: Option<f32>,
 }
 
+pub enum KeyType {
+    Mod,
+    Lock,
+    Normal,
+}
+
 impl KeyDefinition {
-    pub fn is_mod_key(&self) -> bool {
+    pub fn key_type(&self) -> KeyType {
+        if self.is_mod_key() {
+            KeyType::Mod
+        } else if self.is_lock_key() {
+            KeyType::Lock
+        } else {
+            KeyType::Normal
+        }
+    }
+
+    fn is_mod_key(&self) -> bool {
         evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTCTRL
             || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTCTRL
             || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTMETA
@@ -18,6 +34,12 @@ impl KeyDefinition {
             || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTSHIFT
             || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTALT
             || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTALT
+    }
+
+    fn is_lock_key(&self) -> bool {
+        evdev::Key::new(self.scan_code) == evdev::Key::KEY_CAPSLOCK
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_NUMLOCK
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_SCROLLLOCK
     }
 }
 
