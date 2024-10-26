@@ -51,4 +51,33 @@ impl KeyboardHandle for VirtualKeyboard {
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
     }
+
+    fn set_mod(&mut self, key: evdev::Key) {
+        if let Some(keyboard) = &self.session_state.keyboard {
+            let mod_code = {
+                match key {
+                    evdev::Key::KEY_LEFTCTRL
+                    | evdev::Key::KEY_LEFTMETA
+                    | evdev::Key::KEY_RIGHTMETA
+                    | evdev::Key::KEY_RIGHTCTRL => 4,
+
+                    evdev::Key::KEY_LEFTSHIFT | evdev::Key::KEY_RIGHTSHIFT => 1,
+                    evdev::Key::KEY_LEFTALT | evdev::Key::KEY_RIGHTALT => 8,
+
+                    _ => 0,
+                }
+            };
+            println!("mod_code: {}", mod_code);
+
+            keyboard.modifiers(mod_code, 0, 0, 0);
+            self.event_queue.roundtrip(&mut self.session_state).unwrap();
+        }
+    }
+
+    fn remove_mod(&mut self) {
+        if let Some(keyboard) = &self.session_state.keyboard {
+            keyboard.modifiers(0, 0, 0, 0);
+            self.event_queue.roundtrip(&mut self.session_state).unwrap();
+        }
+    }
 }

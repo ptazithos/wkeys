@@ -8,6 +8,19 @@ pub struct KeyDefinition {
     pub width: Option<f32>,
 }
 
+impl KeyDefinition {
+    pub fn is_mod_key(&self) -> bool {
+        evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTCTRL
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTCTRL
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTMETA
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTMETA
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTSHIFT
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTSHIFT
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTALT
+            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTALT
+    }
+}
+
 pub type Layout = Vec<Vec<KeyDefinition>>;
 
 #[derive(Serialize, Deserialize, Debug)]

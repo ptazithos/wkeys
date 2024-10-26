@@ -8,6 +8,8 @@ use crate::{
 pub trait KeyboardHandle {
     fn key_press(&mut self, key: evdev::Key);
     fn key_release(&mut self, key: evdev::Key);
+    fn set_mod(&mut self, key: evdev::Key);
+    fn remove_mod(&mut self);
 }
 
 pub struct AppService<M: KeyboardHandle + 'static> {

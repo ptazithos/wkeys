@@ -2,11 +2,9 @@ use gdk4::{
     prelude::{DisplayExt, ListModelExtManual, MonitorExt},
     Monitor,
 };
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, WidgetExt};
+use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
-
-use tracing::info;
 
 use crate::{layout::parse::LayoutDefinition, service::KeyboardHandle};
 
@@ -16,8 +14,10 @@ pub struct UIModel {
 
 #[derive(Debug)]
 pub enum UIMessage {
-    Press(u16),
-    Release(u16),
+    ButtonPress(u16),
+    ButtonRelease(u16),
+    ModPress(u16),
+    ModRelease,
 }
 
 impl SimpleComponent for UIModel {
@@ -102,24 +102,47 @@ impl SimpleComponent for UIModel {
                 let width =
                     (key.width.unwrap_or(1.0) * f32::from(geometry_unit as u16)).round() as i32;
 
-                let button = gtk::Button::builder()
-                    .label(format!(
-                        "{} {}",
-                        key.bottom_legend.clone().unwrap_or_default(),
-                        key.top_legend.clone().unwrap_or_default()
-                    ))
-                    .width_request(width)
-                    .height_request(geometry_unit)
-                    .build();
+                if key.is_mod_key() {
+                    let toggle = gtk::ToggleButton::builder()
+                        .label(format!(
+                            "{} {}",
+                            key.bottom_legend.clone().unwrap_or_default(),
+                            key.top_legend.clone().unwrap_or_default()
+                        ))
+                        .width_request(width)
+                        .height_request(geometry_unit)
+                        .build();
 
-                let button_sender = sender.clone();
+                    let button_sender = sender.clone();
+                    toggle.connect_toggled(move |btn| {
+                        if btn.is_active() {
+                            button_sender.input(UIMessage::ModPress(scan_code));
+                        } else {
+                            button_sender.input(UIMessage::ModRelease);
+                        }
+                    });
 
-                button.connect_clicked(move |_btn| {
-                    button_sender.input(UIMessage::Press(scan_code));
-                    button_sender.input(UIMessage::Release(scan_code));
-                });
+                    row_container.append(&toggle);
+                } else {
+                    let button = gtk::Button::builder()
+                        .label(format!(
+                            "{} {}",
+                            key.bottom_legend.clone().unwrap_or_default(),
+                            key.top_legend.clone().unwrap_or_default()
+                        ))
+                        .width_request(width)
+                        .height_request(geometry_unit)
+                        .build();
 
-                row_container.append(&button);
+                    let button_sender = sender.clone();
+
+                    button.connect_clicked(move |_btn| {
+                        button_sender.input(UIMessage::ButtonPress(scan_code));
+                        button_sender.input(UIMessage::ButtonRelease(scan_code));
+                    });
+
+                    row_container.append(&button);
+                };
             });
 
             container.append(&row_container);
@@ -132,13 +155,17 @@ impl SimpleComponent for UIModel {
 
     fn update(&mut self, msg: Self::Input, _sender: ComponentSender<Self>) {
         match msg {
-            UIMessage::Press(scan_code) => {
-                info!("Press");
+            UIMessage::ButtonPress(scan_code) => {
                 self.keyboard_handle.key_press(evdev::Key::new(scan_code));
             }
-            UIMessage::Release(scan_code) => {
-                info!("Release");
+            UIMessage::ButtonRelease(scan_code) => {
                 self.keyboard_handle.key_release(evdev::Key::new(scan_code));
+            }
+            UIMessage::ModPress(scan_code) => {
+                self.keyboard_handle.set_mod(evdev::Key::new(scan_code));
+            }
+            UIMessage::ModRelease => {
+                self.keyboard_handle.remove_mod();
             }
         }
     }
