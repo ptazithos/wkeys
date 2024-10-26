@@ -2,8 +2,8 @@ use gdk4::{
     prelude::{DisplayExt, ListModelExtManual, MonitorExt},
     Monitor,
 };
-use gtk::prelude::{BoxExt, GtkWindowExt, WidgetExt};
-use gtk4_layer_shell::{Edge, Layer, LayerShell};
+use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, WidgetExt};
+use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
 use tracing::info;
@@ -16,8 +16,8 @@ pub struct UIModel {
 
 #[derive(Debug)]
 pub enum UIMessage {
-    Press,
-    Release,
+    Press(u16),
+    Release(u16),
 }
 
 impl SimpleComponent for UIModel {
@@ -37,7 +37,7 @@ impl SimpleComponent for UIModel {
     fn init(
         handle: Self::Init,
         window: Self::Root,
-        _sender: ComponentSender<Self>,
+        sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         // Get the height of the smallest monitor.
         let screen_height = if let Some(display) = gdk4::Display::default() {
@@ -61,6 +61,7 @@ impl SimpleComponent for UIModel {
 
         window.init_layer_shell();
         window.set_layer(Layer::Overlay);
+        window.set_keyboard_mode(KeyboardMode::None);
 
         let anchors = [
             (Edge::Left, true),
@@ -77,7 +78,7 @@ impl SimpleComponent for UIModel {
             keyboard_handle: handle.0,
         };
 
-        window.emit_enable_debugging(true);
+        //window.emit_enable_debugging(true);
 
         let container = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -97,6 +98,7 @@ impl SimpleComponent for UIModel {
                 .build();
 
             row.iter().for_each(|key| {
+                let scan_code = key.scan_code;
                 let width =
                     (key.width.unwrap_or(1.0) * f32::from(geometry_unit as u16)).round() as i32;
 
@@ -109,6 +111,13 @@ impl SimpleComponent for UIModel {
                     .width_request(width)
                     .height_request(geometry_unit)
                     .build();
+
+                let button_sender = sender.clone();
+
+                button.connect_clicked(move |_btn| {
+                    button_sender.input(UIMessage::Press(scan_code));
+                    button_sender.input(UIMessage::Release(scan_code));
+                });
 
                 row_container.append(&button);
             });
@@ -123,13 +132,13 @@ impl SimpleComponent for UIModel {
 
     fn update(&mut self, msg: Self::Input, _sender: ComponentSender<Self>) {
         match msg {
-            UIMessage::Press => {
+            UIMessage::Press(scan_code) => {
                 info!("Press");
-                self.keyboard_handle.key_press(evdev::Key::KEY_GRAVE);
+                self.keyboard_handle.key_press(evdev::Key::new(scan_code));
             }
-            UIMessage::Release => {
+            UIMessage::Release(scan_code) => {
                 info!("Release");
-                self.keyboard_handle.key_release(evdev::Key::KEY_GRAVE);
+                self.keyboard_handle.key_release(evdev::Key::new(scan_code));
             }
         }
     }
