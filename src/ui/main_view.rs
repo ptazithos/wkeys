@@ -1,8 +1,8 @@
 use gdk4::{
-    prelude::{DisplayExt, ListModelExtManual, MonitorExt},
+    prelude::{DisplayExt, ListModelExtManual, MonitorExt, ObjectExt},
     Monitor,
 };
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
+use gtk::prelude::{BoxExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
@@ -10,6 +10,8 @@ use crate::{
     layout::parse::{KeyType, LayoutDefinition},
     service::KeyboardHandle,
 };
+
+use super::components::ButtonEX;
 
 pub struct UIModel {
     keyboard_handle: Box<dyn KeyboardHandle>,
@@ -153,21 +155,29 @@ impl SimpleComponent for UIModel {
                         row_container.append(&toggle);
                     }
                     KeyType::Normal => {
-                        let button = gtk::Button::builder()
-                            .label(format!(
+                        let button = ButtonEX::default();
+
+                        button.set_property(
+                            "content",
+                            format!(
                                 "{} {}",
                                 key.bottom_legend.clone().unwrap_or_default(),
                                 key.top_legend.clone().unwrap_or_default()
-                            ))
-                            .width_request(width)
-                            .height_request(geometry_unit)
-                            .build();
+                            ),
+                        );
+                        button.set_width_request(width);
+                        button.set_height_request(geometry_unit);
 
-                        let button_sender = sender.clone();
+                        let press_sender = sender.clone();
+                        button.connect("pressed", true, move |_| {
+                            press_sender.input(UIMessage::ButtonPress(scan_code));
+                            None
+                        });
 
-                        button.connect_clicked(move |_btn| {
-                            button_sender.input(UIMessage::ButtonPress(scan_code));
-                            button_sender.input(UIMessage::ButtonRelease(scan_code));
+                        let release_sender = sender.clone();
+                        button.connect("released", true, move |_| {
+                            release_sender.input(UIMessage::ButtonRelease(scan_code));
+                            None
                         });
 
                         row_container.append(&button);
