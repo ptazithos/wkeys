@@ -173,9 +173,9 @@ impl SimpleComponent for UIModel {
                         row_container.append(&button);
                     }
                 }
-
-                container.append(&row_container);
             });
+
+            container.append(&row_container);
         });
 
         let widgets = ();
