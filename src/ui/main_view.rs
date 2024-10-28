@@ -85,7 +85,7 @@ impl SimpleComponent for UIModel {
             keyboard_handle: handle.0,
         };
 
-        //window.emit_enable_debugging(true);
+        window.emit_enable_debugging(true);
 
         let container = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -157,14 +157,9 @@ impl SimpleComponent for UIModel {
                     KeyType::Normal => {
                         let button = ButtonEX::default();
 
-                        button.set_property(
-                            "content",
-                            format!(
-                                "{} {}",
-                                key.bottom_legend.clone().unwrap_or_default(),
-                                key.top_legend.clone().unwrap_or_default()
-                            ),
-                        );
+                        button.set_primary_content(key.top_legend.clone().unwrap_or_default());
+                        button.set_secondary_content(key.bottom_legend.clone().unwrap_or_default());
+
                         button.set_width_request(width);
                         button.set_height_request(geometry_unit);
 

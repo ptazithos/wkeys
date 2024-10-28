@@ -1,4 +1,4 @@
-use std::{cell::RefCell, sync::OnceLock};
+use std::{borrow::BorrowMut, cell::RefCell, sync::OnceLock};
 
 use gdk4::glib::{subclass::Signal, Properties};
 use gtk::{glib, prelude::*, subclass::prelude::*};
@@ -8,8 +8,11 @@ use relm4::gtk;
 #[properties(wrapper_type = ButtonEX)]
 pub struct ButtonInner {
     #[property(get, set)]
-    content: RefCell<Option<String>>,
-    child: RefCell<Option<gtk::Label>>,
+    primary_content: RefCell<Option<String>>,
+    #[property(get, set)]
+    secondary_content: RefCell<Option<String>>,
+    #[property(get, set)]
+    layout: RefCell<Option<gtk::Box>>,
 }
 
 #[glib::object_subclass]
@@ -33,15 +36,13 @@ impl ObjectImpl for ButtonInner {
         self.parent_constructed();
         let obj = self.obj();
 
-        *self.content.borrow_mut() = None;
+        obj.connect_primary_content_notify(|obj| {
+            obj.update_view();
+        });
 
-        let child = gtk::Label::new(Some(obj.content().unwrap_or_default().as_str()));
-
-        child.set_parent(&*obj);
-        obj.bind_property("content", &child, "label")
-            .sync_create()
-            .build();
-        *self.child.borrow_mut() = Some(child);
+        obj.connect_secondary_content_notify(|obj| {
+            obj.update_view();
+        });
 
         let gesture = gtk::GestureClick::new();
 
@@ -71,7 +72,7 @@ impl ObjectImpl for ButtonInner {
     }
 
     fn dispose(&self) {
-        if let Some(child) = self.child.borrow_mut().take() {
+        if let Some(child) = self.layout.borrow_mut().take() {
             child.unparent();
         }
     }
@@ -83,6 +84,39 @@ glib::wrapper! {
     pub struct ButtonEX(ObjectSubclass<ButtonInner>)
         @extends gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl ButtonEX {
+    pub fn update_view(&self) {
+        if let Some(child) = self.layout().borrow_mut().take() {
+            child.unparent();
+        }
+
+        let primary_content = self.primary_content();
+        let secondary_content = self.secondary_content();
+
+        let new_layout = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .valign(gtk::Align::Center)
+            .build();
+
+        if let Some(primary_content) = primary_content {
+            if primary_content.len() > 0 {
+                let primary_content = gtk::Label::new(Some(primary_content.as_str()));
+                new_layout.append(&primary_content);
+            }
+        }
+
+        if let Some(secondary_content) = secondary_content {
+            if secondary_content.len() > 0 {
+                let secondary_content = gtk::Label::new(Some(secondary_content.as_str()));
+                new_layout.append(&secondary_content);
+            }
+        }
+
+        new_layout.set_parent(&*self);
+        self.set_layout(new_layout);
+    }
 }
 
 impl Default for ButtonEX {
