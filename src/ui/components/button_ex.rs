@@ -69,6 +69,12 @@ impl ObjectImpl for ButtonInner {
             ]
         })
     }
+
+    fn dispose(&self) {
+        if let Some(child) = self.child.borrow_mut().take() {
+            child.unparent();
+        }
+    }
 }
 
 impl WidgetImpl for ButtonInner {}
