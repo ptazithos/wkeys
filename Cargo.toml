@@ -21,3 +21,4 @@ wayland-protocols-misc = { version = "0.3.5", features = [
 xkbcommon = "0.8.0"
 gdk4 = "0.9.3"
 ctrlc = "3.4"
+single-instance = "0.3"
