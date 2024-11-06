@@ -1,13 +1,14 @@
-mod layout;
-mod native;
 mod app_service;
+mod layout;
+mod message_service;
+mod native;
 mod ui;
 
-use layout::assets::LayoutAssets;
-use native::VirtualKeyboard;
 use app_service::AppService;
+use layout::assets::LayoutAssets;
+use message_service::MessageService;
+use native::VirtualKeyboard;
 use single_instance::SingleInstance;
-use tracing::info;
 
 fn main() {
     tracing_subscriber::fmt::init();
@@ -22,6 +23,7 @@ fn main() {
         let app_service = AppService::new(keyboard, default_layout);
         app_service.run();
     } else {
-        info!("Another instance is already running.");
+        let message_service = MessageService::new();
+        message_service.run();
     }
 }
