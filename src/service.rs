@@ -2,7 +2,7 @@ use relm4::RelmApp;
 
 use crate::{
     layout::parse::LayoutDefinition,
-    ui::{UIMessage, UIModel},
+    ui::{StyleAssets, UIMessage, UIModel},
 };
 
 pub trait KeyboardHandle {
@@ -23,6 +23,10 @@ pub struct AppService<M: KeyboardHandle + 'static> {
 impl<M: KeyboardHandle + 'static> AppService<M> {
     pub fn new(keyboard_handle: M, layout_definition: LayoutDefinition) -> Self {
         let ui = RelmApp::new("net.pithos.wkeys");
+
+        let css_str = StyleAssets::get_default_style_file();
+        relm4::set_global_css(&css_str);
+        
         Self {
             ui_handle: ui,
             keyboard_handle,

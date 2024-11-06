@@ -1,0 +1,28 @@
+window {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+button {
+    background-color: rgb(220, 220, 220);
+    background-image: none;
+    border-radius: 0;
+    margin: 1px;
+    padding: 12px;
+
+}
+
+button>label {
+    color: black;
+}
+
+button:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+button:active {
+    background-color: rgb(255, 255, 255);
+}
+
+button:checked {
+    background-color: rgb(255, 255, 255);
+}
