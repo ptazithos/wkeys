@@ -8,7 +8,7 @@ use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent
 
 use crate::{
     layout::parse::{KeyType, LayoutDefinition},
-    service::KeyboardHandle,
+    app_service::KeyboardHandle,
 };
 
 use super::components::ButtonEX;
