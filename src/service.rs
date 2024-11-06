@@ -15,7 +15,7 @@ pub trait KeyboardHandle {
     fn append_lock(&mut self, key: evdev::Key);
     fn remove_lock(&mut self, key: evdev::Key);
 
-    fn destory(&mut self);
+    fn destroy(&mut self);
 }
 
 pub struct AppService<M: KeyboardHandle + 'static> {

@@ -2,7 +2,7 @@ use gdk4::{
     prelude::{DisplayExt, ListModelExtManual, MonitorExt, ObjectExt},
     Monitor,
 };
-use gtk::prelude::{BoxExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
+use gtk::prelude::{ApplicationExt, BoxExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
@@ -25,6 +25,7 @@ pub enum UIMessage {
     ModRelease(u16),
     LockPress(u16),
     LockRelease(u16),
+    AppQuit,
 }
 
 impl SimpleComponent for UIModel {
@@ -46,6 +47,12 @@ impl SimpleComponent for UIModel {
         window: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
+        let quit_sender = sender.clone();
+        ctrlc::set_handler(move || {
+            quit_sender.input(UIMessage::AppQuit);
+        })
+        .unwrap();
+
         // Get the height of the smallest monitor.
         let screen_height = if let Some(display) = gdk4::Display::default() {
             let monitors = display.monitors();
@@ -207,6 +214,10 @@ impl SimpleComponent for UIModel {
             }
             UIMessage::LockRelease(scan_code) => {
                 self.keyboard_handle.remove_lock(evdev::Key::new(scan_code));
+            }
+            UIMessage::AppQuit => {
+                self.keyboard_handle.destroy();
+                relm4::main_application().quit();
             }
         }
     }
