@@ -8,10 +8,14 @@ use crate::{
 pub trait KeyboardHandle {
     fn key_press(&mut self, key: evdev::Key);
     fn key_release(&mut self, key: evdev::Key);
+
     fn append_mod(&mut self, key: evdev::Key);
     fn remove_mod(&mut self, key: evdev::Key);
+
     fn append_lock(&mut self, key: evdev::Key);
     fn remove_lock(&mut self, key: evdev::Key);
+
+    fn destory(&mut self);
 }
 
 pub struct AppService<M: KeyboardHandle + 'static> {
@@ -26,7 +30,7 @@ impl<M: KeyboardHandle + 'static> AppService<M> {
 
         let css_str = StyleAssets::get_default_style_file();
         relm4::set_global_css(&css_str);
-        
+
         Self {
             ui_handle: ui,
             keyboard_handle,

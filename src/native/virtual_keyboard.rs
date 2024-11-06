@@ -83,6 +83,13 @@ impl KeyboardHandle for VirtualKeyboard {
 
         self.update_state();
     }
+
+    fn destory(&mut self) {
+        if let Some(keyboard) = &self.session_state.keyboard {
+            keyboard.destroy();
+            self.event_queue.roundtrip(&mut self.session_state).unwrap();
+        }
+    }
 }
 
 impl VirtualKeyboard {
