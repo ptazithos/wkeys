@@ -85,7 +85,7 @@ impl SimpleComponent for UIModel {
             keyboard_handle: handle.0,
         };
 
-        window.emit_enable_debugging(true);
+        // window.emit_enable_debugging(true);
 
         let container = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
