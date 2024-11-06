@@ -1,4 +1,3 @@
-mod ipc;
 mod layout;
 mod native;
 mod app_service;
