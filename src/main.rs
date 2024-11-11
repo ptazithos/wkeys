@@ -6,7 +6,7 @@ mod ui;
 mod utils;
 
 use clap::Parser;
-use ipc::IPCHandle;
+use ipc::IPC;
 use layout::assets::LayoutAssets;
 use native::VirtualKeyboard;
 use service::client::MessageService;
@@ -20,13 +20,13 @@ fn main() {
     let args = ProgramArgs::parse();
     info!("Message: {:?}", args);
 
-    let ipc_handle = IPCHandle::init();
+    let ipc = IPC::init();
 
-    if ipc_handle.is_single_instance() {
+    if ipc.is_single_instance() {
         info!("Starting app service.");
 
         ctrlc::set_handler(move || {
-            IPCHandle::clean_up();
+            IPC::clean_up();
             std::process::exit(0);
         })
         .unwrap();
@@ -35,9 +35,13 @@ fn main() {
 
         let keyboard = VirtualKeyboard::new();
 
-        AppService::new(keyboard, default_layout).run();
+        AppService::new(keyboard, ipc, default_layout).run();
+        info!("App Service Exiting.");
     } else {
         info!("Starting message service.");
-        MessageService::new().run();
+        MessageService::new(ipc).run();
+        info!("Message service exiting.");
     }
+
+    info!("Exited");
 }

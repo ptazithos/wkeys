@@ -1,3 +1,5 @@
+use std::{sync::mpsc::Receiver, thread};
+
 use gdk4::{
     prelude::{DisplayExt, ListModelExtManual, MonitorExt, ObjectExt},
     Monitor,
@@ -29,7 +31,7 @@ pub enum UIMessage {
 }
 
 impl SimpleComponent for UIModel {
-    type Init = (Box<dyn KeyboardHandle>, LayoutDefinition);
+    type Init = (Box<dyn KeyboardHandle>, LayoutDefinition, Receiver<String>);
 
     type Input = UIMessage;
     type Output = ();
@@ -47,6 +49,17 @@ impl SimpleComponent for UIModel {
         window: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
+        // Create a thread to listen for the close command.
+        let message_sender = sender.clone();
+        thread::spawn(move || loop {
+            if let Ok(command) = handle.2.recv() {
+                if command == "close" {
+                    message_sender.input(UIMessage::AppQuit);
+                    break;
+                }
+            }
+        });
+
         // Get the height of the smallest monitor.
         let screen_height = if let Some(display) = gdk4::Display::default() {
             let monitors = display.monitors();
