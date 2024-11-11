@@ -21,3 +21,4 @@ wayland-protocols-misc = { version = "0.3.5", features = [
 xkbcommon = "0.8.0"
 gdk4 = "0.9.3"
 clap = { version = "4.5.20", features = ["derive"] }
+ctrlc = "3.4.5"
