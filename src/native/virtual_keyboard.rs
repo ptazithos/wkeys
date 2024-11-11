@@ -1,3 +1,4 @@
+use tracing::info;
 use wayland_client::{protocol::wl_keyboard::KeyState, Connection, EventQueue};
 
 use crate::service::host::KeyboardHandle;
@@ -44,6 +45,7 @@ impl VirtualKeyboard {
 impl KeyboardHandle for VirtualKeyboard {
     fn key_press(&mut self, key: evdev::Key) {
         if let Some(keyboard) = &self.session_state.keyboard {
+            info!("Key Pressed: {:?}", key);
             keyboard.key(0, key.code().into(), KeyState::Pressed.into());
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
@@ -51,12 +53,14 @@ impl KeyboardHandle for VirtualKeyboard {
 
     fn key_release(&mut self, key: evdev::Key) {
         if let Some(keyboard) = &self.session_state.keyboard {
+            info!("Key Released: {:?}", key);
             keyboard.key(0, key.code().into(), KeyState::Released.into());
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
     }
 
     fn append_mod(&mut self, key: evdev::Key) {
+        info!("Mod Appended: {:?}", key);
         let mod_code = Self::map_mod_key(key);
         self.modifiers |= mod_code;
 
@@ -64,6 +68,7 @@ impl KeyboardHandle for VirtualKeyboard {
     }
 
     fn remove_mod(&mut self, key: evdev::Key) {
+        info!("Mod Removed: {:?}", key);
         let mod_code = Self::map_mod_key(key);
         self.modifiers &= !mod_code;
 
@@ -71,6 +76,7 @@ impl KeyboardHandle for VirtualKeyboard {
     }
 
     fn append_lock(&mut self, key: evdev::Key) {
+        info!("Lock Appended: {:?}", key);
         let lock_code = Self::map_lock_key(key);
         self.locks |= lock_code;
 
@@ -78,6 +84,7 @@ impl KeyboardHandle for VirtualKeyboard {
     }
 
     fn remove_lock(&mut self, key: evdev::Key) {
+        info!("Lock Removed: {:?}", key);
         let lock_code = Self::map_lock_key(key);
         self.locks &= !lock_code;
 
@@ -86,6 +93,7 @@ impl KeyboardHandle for VirtualKeyboard {
 
     fn destroy(&mut self) {
         if let Some(keyboard) = &self.session_state.keyboard {
+            info!("Destroying Virtual Keyboard.");
             keyboard.destroy();
             self.event_queue.roundtrip(&mut self.session_state).unwrap();
         }
