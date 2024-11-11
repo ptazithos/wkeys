@@ -7,8 +7,8 @@ use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
 use crate::{
-    layout::parse::{KeyType, LayoutDefinition},
     app_service::KeyboardHandle,
+    layout::parse::{KeyType, LayoutDefinition},
 };
 
 use super::components::ButtonEX;
@@ -47,12 +47,6 @@ impl SimpleComponent for UIModel {
         window: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let quit_sender = sender.clone();
-        ctrlc::set_handler(move || {
-            quit_sender.input(UIMessage::AppQuit);
-        })
-        .unwrap();
-
         // Get the height of the smallest monitor.
         let screen_height = if let Some(display) = gdk4::Display::default() {
             let monitors = display.monitors();
