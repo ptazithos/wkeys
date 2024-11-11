@@ -39,6 +39,6 @@ fn main() {
         AppService::new(keyboard, default_layout).run();
     } else {
         info!("Starting message service.");
-        let message_service = MessageService::new().run();
+        MessageService::new().run();
     }
 }
