@@ -7,7 +7,7 @@ use tracing::info;
 
 use crate::service::IPCHandle;
 
-static UNIX_SOCKET_NAME: &str = "net.pithos.wkeys";
+static UNIX_SOCKET_NAME: &str = "/tmp/net.pithos.wkeys";
 
 pub struct IPC {
     socket: Option<UnixListener>,

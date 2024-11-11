@@ -1,5 +1,3 @@
-use std::{sync::mpsc::channel, thread};
-
 use relm4::RelmApp;
 use tracing::info;
 
@@ -46,34 +44,11 @@ impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N
     }
 
     pub fn run(self) {
-        let (sender, receiver) = channel();
-        let ipc_handle = self.ipc_handle;
-        thread::spawn(move || loop {
-            info!("Starting IPC server.");
-
-            loop {
-                let res = ipc_handle.read();
-                if let Ok(message) = String::from_utf8(res) {
-                    info!("Received IPC message: {}", message);
-                    match message.as_str() {
-                        "close" => {
-                            sender.send(message).unwrap();
-                            break;
-                        }
-                        _ => {
-                            info!("Unknown command.");
-                        }
-                    }
-                }
-            }
-            ipc_handle.close();
-        });
-
         info!("Starting UI.");
         self.ui_handle.run::<UIModel>((
             Box::new(self.keyboard_handle),
+            Box::new(self.ipc_handle),
             self.layout_definition,
-            receiver,
         ));
     }
 }

@@ -1,4 +1,4 @@
-use std::{sync::mpsc::Receiver, thread};
+use std::thread;
 
 use gdk4::{
     prelude::{DisplayExt, ListModelExtManual, MonitorExt, ObjectExt},
@@ -10,7 +10,7 @@ use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent
 
 use crate::{
     layout::parse::{KeyType, LayoutDefinition},
-    service::host::KeyboardHandle,
+    service::{host::KeyboardHandle, IPCHandle},
 };
 
 use super::components::ButtonEX;
@@ -31,7 +31,11 @@ pub enum UIMessage {
 }
 
 impl SimpleComponent for UIModel {
-    type Init = (Box<dyn KeyboardHandle>, LayoutDefinition, Receiver<String>);
+    type Init = (
+        Box<dyn KeyboardHandle>,
+        Box<dyn IPCHandle + Send>,
+        LayoutDefinition,
+    );
 
     type Input = UIMessage;
     type Output = ();
@@ -51,11 +55,16 @@ impl SimpleComponent for UIModel {
     ) -> ComponentParts<Self> {
         // Create a thread to listen for the close command.
         let message_sender = sender.clone();
+        let ipc_handle = handle.1;
         thread::spawn(move || loop {
-            if let Ok(command) = handle.2.recv() {
-                if command == "close" {
-                    message_sender.input(UIMessage::AppQuit);
-                    break;
+            if let Ok(command) = String::from_utf8(ipc_handle.read()) {
+                match command.as_str() {
+                    "close" => {
+                        ipc_handle.close();
+                        message_sender.input(UIMessage::AppQuit);
+                        break;
+                    }
+                    _ => {}
                 }
             }
         });
@@ -110,7 +119,7 @@ impl SimpleComponent for UIModel {
         container.set_align(gtk::Align::Center);
         container.set_expand(true);
 
-        let keyboard_definition = handle.1;
+        let keyboard_definition = handle.2;
         let geometry_unit = cal_geometry_unit(window_height, keyboard_definition.height);
 
         keyboard_definition.layout.iter().for_each(|row| {
