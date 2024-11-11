@@ -7,8 +7,8 @@ use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
 
 use crate::{
-    app_service::KeyboardHandle,
     layout::parse::{KeyType, LayoutDefinition},
+    service::host::KeyboardHandle,
 };
 
 use super::components::ButtonEX;

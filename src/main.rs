@@ -1,17 +1,16 @@
-mod app_service;
 mod ipc;
 mod layout;
-mod message_service;
 mod native;
+mod service;
 mod ui;
 mod utils;
 
-use app_service::AppService;
 use clap::Parser;
 use ipc::IPCHandle;
 use layout::assets::LayoutAssets;
-use message_service::MessageService;
 use native::VirtualKeyboard;
+use service::client::MessageService;
+use service::host::AppService;
 use tracing::info;
 use utils::ProgramArgs;
 

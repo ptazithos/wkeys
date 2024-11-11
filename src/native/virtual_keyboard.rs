@@ -1,6 +1,6 @@
 use wayland_client::{protocol::wl_keyboard::KeyState, Connection, EventQueue};
 
-use crate::app_service::KeyboardHandle;
+use crate::service::host::KeyboardHandle;
 
 use super::session::SessionState;
 
