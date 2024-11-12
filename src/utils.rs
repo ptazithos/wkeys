@@ -9,5 +9,5 @@ pub enum MessageEnum {
 #[command(version)]
 pub struct ProgramArgs {
     #[arg(short, long)]
-    message: Option<MessageEnum>,
+    pub message: Option<MessageEnum>,
 }

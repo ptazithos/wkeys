@@ -39,7 +39,7 @@ fn main() {
         info!("App Service Exiting.");
     } else {
         info!("Starting message service.");
-        MessageService::new(ipc).run();
+        MessageService::new(ipc, args).run();
         info!("Message service exiting.");
     }
 
