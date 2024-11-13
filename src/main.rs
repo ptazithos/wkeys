@@ -1,3 +1,4 @@
+mod config;
 mod ipc;
 mod layout;
 mod native;
@@ -6,8 +7,9 @@ mod ui;
 mod utils;
 
 use clap::Parser;
+use config::AppConfig;
 use ipc::IPC;
-use layout::assets::LayoutAssets;
+use layout::parse::LayoutDefinition;
 use native::VirtualKeyboard;
 use service::client::MessageService;
 use service::host::AppService;
@@ -31,11 +33,13 @@ fn main() {
         })
         .unwrap();
 
-        let default_layout = LayoutAssets::get_default_60_percent_layout();
+        let app_config = AppConfig::default();
+        let user_layout = LayoutDefinition::from_toml(&app_config.get_layout_file_content());
+        let user_style = app_config.get_css_file_content();
 
         let keyboard = VirtualKeyboard::new();
 
-        AppService::new(keyboard, ipc, default_layout).run();
+        AppService::new(keyboard, ipc, user_layout, user_style).run();
         info!("App Service Exiting.");
     } else {
         info!("Starting message service.");

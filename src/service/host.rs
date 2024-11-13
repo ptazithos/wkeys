@@ -3,7 +3,7 @@ use tracing::info;
 
 use crate::{
     layout::parse::LayoutDefinition,
-    ui::{StyleAssets, UIMessage, UIModel},
+    ui::{UIMessage, UIModel},
 };
 
 use super::IPCHandle;
@@ -29,11 +29,15 @@ pub struct AppService<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static
 }
 
 impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N> {
-    pub fn new(keyboard_handle: M, ipc_handle: N, layout_definition: LayoutDefinition) -> Self {
+    pub fn new(
+        keyboard_handle: M,
+        ipc_handle: N,
+        layout_definition: LayoutDefinition,
+        styles: String,
+    ) -> Self {
         let ui = RelmApp::new("net.pithos.wkeys");
 
-        let css_str = StyleAssets::get_default_style_file();
-        relm4::set_global_css(&css_str);
+        relm4::set_global_css(&styles);
 
         Self {
             ui_handle: ui,
