@@ -7,6 +7,7 @@ use gdk4::{
 use gtk::prelude::{ApplicationExt, BoxExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
 use relm4::{gtk, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent};
+use tracing::info;
 
 use crate::{
     layout::parse::{KeyType, LayoutDefinition},
@@ -60,7 +61,7 @@ impl SimpleComponent for UIModel {
             if let Ok(command) = String::from_utf8(ipc_handle.read()) {
                 match command.as_str() {
                     "close" => {
-                        ipc_handle.close();
+                        info!("Received close command.");
                         message_sender.input(UIMessage::AppQuit);
                         break;
                     }

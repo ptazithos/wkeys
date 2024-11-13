@@ -28,6 +28,7 @@ fn main() {
         info!("Starting app service.");
 
         ctrlc::set_handler(move || {
+            info!("Received SIGINT. Exiting.");
             IPC::clean_up();
             std::process::exit(0);
         })

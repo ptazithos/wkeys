@@ -3,7 +3,7 @@ use std::{
     os::unix::net::{UnixListener, UnixStream},
 };
 
-use tracing::info;
+use tracing::{error, info};
 
 use crate::service::IPCHandle;
 
@@ -39,7 +39,20 @@ impl IPC {
 
     pub fn clean_up() {
         info!("Cleaning up IPC socket.");
-        std::fs::remove_file(UNIX_SOCKET_NAME).unwrap();
+        match std::fs::remove_file(UNIX_SOCKET_NAME) {
+            Err(e) => {
+                if e.raw_os_error().unwrap_or_default() != 2 {
+                    error!("Failed to remove IPC socket: {}", e);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Drop for IPC {
+    fn drop(&mut self) {
+        IPC::clean_up();
     }
 }
 
@@ -64,9 +77,5 @@ impl IPCHandle for IPC {
             }
         }
         vec![]
-    }
-
-    fn close(&self) {
-        IPC::clean_up();
     }
 }
