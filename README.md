@@ -9,7 +9,7 @@ An on-screen keyboard for wayland desktop written by rust using GTK-rs.
 #### Cargo
 
 ```shell
-cargo add wkeys
+cargo install wkeys
 ```
 
 #### Build from Source
