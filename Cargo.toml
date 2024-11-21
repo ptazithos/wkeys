@@ -2,6 +2,13 @@
 name = "wkeys"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+readme = "README.md"
+keywords = ["wayland", "keyboard", "input"]
+homepage = "https://github.com/ptazithos/wkeys"
+repository = "https://github.com/ptazithos/wkeys"
+description = "An on-screen keyboard for wayland desktop written by rust using GTK-rs."
+
 
 [dependencies]
 tempfile = "3.13.0"
