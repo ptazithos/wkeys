@@ -104,6 +104,7 @@ layout = [
 ]
 
 ```
+For more scan codes, check this: [linux/input-event-codes.h](https://github.com/torvalds/linux/blob/43fb83c17ba2d63dfb798f0be7453ed55ca3f9c2/include/uapi/linux/input-event-codes.h#L4)
 
 The default style file is:
 
