@@ -138,6 +138,12 @@ button:checked {
 }
 ```
 
+## IPC
+Close Wkeys by IPC message
+```shell
+wkeys --message close
+```
+
 ## License
 
 This repository is licensed under the [MIT License](LICENSE).
