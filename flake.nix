@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake for wkeys";
+  description = "A very basic flake for wkeys, by Yadobler";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
