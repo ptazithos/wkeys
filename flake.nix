@@ -15,7 +15,7 @@
         "aarch64-darwin"
       ];
 
-      perSystem = {pkgs, system, ...}:
+      perSystem = {pkgs, system, lib,...}:
         let 
           wkeys_build = pkgs.rustPlatform.buildRustPackage {
             pname = "wkeys";
