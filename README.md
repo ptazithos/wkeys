@@ -12,7 +12,7 @@ Global installation:
 
 Add to your `flake.nix`:
 ```nix
-    inputs.wkeys.url =  "github:yadobler/wkeys";
+    inputs.wkeys.url =  "github:ptazithos/wkeys";
 ```
 
 then somewhere in `configuration.nix`:
@@ -33,7 +33,7 @@ cargo install wkeys
 #### [NEW] Build from Source (nix)
 clone the repo and `nix build` (not `nix-build` since this is a flake repo). Dependencies will automatically install specifically for this project:
 ```shell
-git clone https://github.com/yadobler/wkeys.git
+git clone https://github.com/ptazithos/wkeys.git
 nix-build
 ```
 The generated files will appear in a symlink `result`.  
