@@ -6,11 +6,37 @@ An on-screen keyboard for wayland desktop written by rust using GTK-rs.
 ![Default Layout](./assets/default.png)
 
 ## Installation
+#### [NEW] nix:
+
+Global installation:
+
+Add to your `flake.nix`:
+```nix
+    inputs.wkeys.url =  "github:ptazithos/wkeys";
+```
+
+then somewhere in `configuration.nix`:
+```nix
+  environment.systemPackages = with pkgs; [
+    inputs.wkeys.packages.${system}.default
+  ]
+```
+(define "system" somewhere, ideally in `flake.nix`)
+
+
 #### Cargo
 
 ```shell
 cargo install wkeys
 ```
+
+#### [NEW] Build from Source (nix)
+clone the repo and `nix build` (not `nix-build` since this is a flake repo). Dependencies will automatically install specifically for this project:
+```shell
+git clone https://github.com/ptazithos/wkeys.git
+nix-build
+```
+The generated files will appear in a symlink `result`.  
 
 #### Build from Source
 Install dependencies, taking Arch Linux as an example.
