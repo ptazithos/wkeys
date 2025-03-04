@@ -1079,10 +1079,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "cosmic-applet"
+name = "cosmic-applet-wkeys"
 version = "0.1.0"
 dependencies = [
  "libcosmic",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

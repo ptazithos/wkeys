@@ -1,5 +1,5 @@
 [package]
-name = "cosmic-applet"
+name = "cosmic-applet-wkeys"
 version = "0.1.0"
 edition = "2024"
 
@@ -9,3 +9,5 @@ libcosmic = { git = "https://github.com/pop-os/libcosmic", features = [
     "tokio",
     "wayland",
 ] }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

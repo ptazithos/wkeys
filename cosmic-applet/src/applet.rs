@@ -1,6 +1,7 @@
 use std::process::Command;
 
 use cosmic::{Task, app::Core};
+use tracing::info;
 
 #[derive(Clone, Debug)]
 pub enum AppletMessage {
@@ -19,7 +20,7 @@ impl cosmic::Application for Applet {
 
     type Message = AppletMessage;
 
-    const APP_ID: &str = "net.pithos.wkeys.applet";
+    const APP_ID: &str = "net.pithos.applet.wkeys";
 
     fn core(&self) -> &cosmic::app::Core {
         &self.core
@@ -51,12 +52,21 @@ impl cosmic::Application for Applet {
     }
 
     fn update(&mut self, message: Self::Message) -> cosmic::app::Task<Self::Message> {
+        info!("Received {:?}", message);
         match message {
             AppletMessage::ToggleWkeys => {
                 if self.is_toggled {
-                    let _ = Command::new("wkeys").arg("--message").arg("close").spawn();
+                    let res = Command::new("wkeys")
+                        .env("PATH", "/home/tazi/.cargo/bin/")
+                        .arg("--message")
+                        .arg("close")
+                        .spawn();
+                    info!("start wkeys {:?}", res);
                 } else {
-                    let _ = Command::new("wkeys").spawn();
+                    let res = Command::new("wkeys")
+                        .env("PATH", "/home/tazi/.cargo/bin/")
+                        .spawn();
+                    info!("end wkeys {:?}", res);
                 }
                 self.is_toggled = !self.is_toggled;
             }
