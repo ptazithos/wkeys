@@ -26,20 +26,20 @@ impl KeyDefinition {
     }
 
     fn is_mod_key(&self) -> bool {
-        evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTCTRL
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTCTRL
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTMETA
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTMETA
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTSHIFT
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTSHIFT
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_LEFTALT
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_RIGHTALT
+        evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_LEFTCTRL
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_RIGHTCTRL
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_LEFTMETA
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_RIGHTMETA
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_LEFTSHIFT
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_RIGHTSHIFT
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_LEFTALT
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_RIGHTALT
     }
 
     fn is_lock_key(&self) -> bool {
-        evdev::Key::new(self.scan_code) == evdev::Key::KEY_CAPSLOCK
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_NUMLOCK
-            || evdev::Key::new(self.scan_code) == evdev::Key::KEY_SCROLLLOCK
+        evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_CAPSLOCK
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_NUMLOCK
+            || evdev::KeyCode::new(self.scan_code) == evdev::KeyCode::KEY_SCROLLLOCK
     }
 }
 

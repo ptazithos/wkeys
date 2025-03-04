@@ -9,14 +9,14 @@ use crate::{
 use super::IPCHandle;
 
 pub trait KeyboardHandle {
-    fn key_press(&mut self, key: evdev::Key);
-    fn key_release(&mut self, key: evdev::Key);
+    fn key_press(&mut self, key: evdev::KeyCode);
+    fn key_release(&mut self, key: evdev::KeyCode);
 
-    fn append_mod(&mut self, key: evdev::Key);
-    fn remove_mod(&mut self, key: evdev::Key);
+    fn append_mod(&mut self, key: evdev::KeyCode);
+    fn remove_mod(&mut self, key: evdev::KeyCode);
 
-    fn append_lock(&mut self, key: evdev::Key);
-    fn remove_lock(&mut self, key: evdev::Key);
+    fn append_lock(&mut self, key: evdev::KeyCode);
+    fn remove_lock(&mut self, key: evdev::KeyCode);
 
     fn destroy(&mut self);
 }
