@@ -1,0 +1,32 @@
+[package]
+name = "wkeys"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+keywords = ["wayland", "keyboard", "input"]
+homepage = "https://github.com/ptazithos/wkeys"
+repository = "https://github.com/ptazithos/wkeys"
+description = "An on-screen keyboard for wayland desktop written by rust using GTK-rs."
+
+
+[dependencies]
+tempfile = "3.13.0"
+evdev = "0.13.0"
+serde = { version = "1.0.214", features = ["derive"] }
+gtk4-layer-shell = "0.5.0"
+relm4 = "0.9.1"
+rust-embed = "8.5.0"
+toml = "0.8.19"
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+wayland-client = "0.31.7"
+wayland-protocols-misc = { version = "0.3.5", features = [
+    "client",
+    "wayland-client",
+] }
+xkbcommon = "0.8.0"
+gdk4 = "0.9.3"
+clap = { version = "4.5.20", features = ["derive"] }
+ctrlc = "3.4.5"
+xdg = "2.5.2"

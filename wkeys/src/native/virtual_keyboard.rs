@@ -43,7 +43,7 @@ impl VirtualKeyboard {
 }
 
 impl KeyboardHandle for VirtualKeyboard {
-    fn key_press(&mut self, key: evdev::Key) {
+    fn key_press(&mut self, key: evdev::KeyCode) {
         if let Some(keyboard) = &self.session_state.keyboard {
             info!("Key Pressed: {:?}", key);
             keyboard.key(0, key.code().into(), KeyState::Pressed.into());
@@ -51,7 +51,7 @@ impl KeyboardHandle for VirtualKeyboard {
         }
     }
 
-    fn key_release(&mut self, key: evdev::Key) {
+    fn key_release(&mut self, key: evdev::KeyCode) {
         if let Some(keyboard) = &self.session_state.keyboard {
             info!("Key Released: {:?}", key);
             keyboard.key(0, key.code().into(), KeyState::Released.into());
@@ -59,7 +59,7 @@ impl KeyboardHandle for VirtualKeyboard {
         }
     }
 
-    fn append_mod(&mut self, key: evdev::Key) {
+    fn append_mod(&mut self, key: evdev::KeyCode) {
         info!("Mod Appended: {:?}", key);
         let mod_code = Self::map_mod_key(key);
         self.modifiers |= mod_code;
@@ -67,7 +67,7 @@ impl KeyboardHandle for VirtualKeyboard {
         self.update_state();
     }
 
-    fn remove_mod(&mut self, key: evdev::Key) {
+    fn remove_mod(&mut self, key: evdev::KeyCode) {
         info!("Mod Removed: {:?}", key);
         let mod_code = Self::map_mod_key(key);
         self.modifiers &= !mod_code;
@@ -75,7 +75,7 @@ impl KeyboardHandle for VirtualKeyboard {
         self.update_state();
     }
 
-    fn append_lock(&mut self, key: evdev::Key) {
+    fn append_lock(&mut self, key: evdev::KeyCode) {
         info!("Lock Appended: {:?}", key);
         let lock_code = Self::map_lock_key(key);
         self.locks |= lock_code;
@@ -83,7 +83,7 @@ impl KeyboardHandle for VirtualKeyboard {
         self.update_state();
     }
 
-    fn remove_lock(&mut self, key: evdev::Key) {
+    fn remove_lock(&mut self, key: evdev::KeyCode) {
         info!("Lock Removed: {:?}", key);
         let lock_code = Self::map_lock_key(key);
         self.locks &= !lock_code;
@@ -108,21 +108,21 @@ impl VirtualKeyboard {
         }
     }
 
-    fn map_mod_key(key: evdev::Key) -> u32 {
+    fn map_mod_key(key: evdev::KeyCode) -> u32 {
         match key {
-            evdev::Key::KEY_LEFTCTRL | evdev::Key::KEY_RIGHTCTRL => 4,
-            evdev::Key::KEY_LEFTMETA | evdev::Key::KEY_RIGHTMETA => 4,
-            evdev::Key::KEY_LEFTSHIFT | evdev::Key::KEY_RIGHTSHIFT => 1,
-            evdev::Key::KEY_LEFTALT | evdev::Key::KEY_RIGHTALT => 8,
+            evdev::KeyCode::KEY_LEFTCTRL | evdev::KeyCode::KEY_RIGHTCTRL => 4,
+            evdev::KeyCode::KEY_LEFTMETA | evdev::KeyCode::KEY_RIGHTMETA => 4,
+            evdev::KeyCode::KEY_LEFTSHIFT | evdev::KeyCode::KEY_RIGHTSHIFT => 1,
+            evdev::KeyCode::KEY_LEFTALT | evdev::KeyCode::KEY_RIGHTALT => 8,
             _ => 0,
         }
     }
 
-    fn map_lock_key(key: evdev::Key) -> u32 {
+    fn map_lock_key(key: evdev::KeyCode) -> u32 {
         match key {
-            evdev::Key::KEY_CAPSLOCK => 2,
-            evdev::Key::KEY_NUMLOCK => 256,
-            evdev::Key::KEY_SCROLLLOCK => 32768,
+            evdev::KeyCode::KEY_CAPSLOCK => 2,
+            evdev::KeyCode::KEY_NUMLOCK => 256,
+            evdev::KeyCode::KEY_SCROLLLOCK => 32768,
             _ => 0,
         }
     }

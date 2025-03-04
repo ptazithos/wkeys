@@ -215,22 +215,28 @@ impl SimpleComponent for UIModel {
     fn update(&mut self, msg: Self::Input, _sender: ComponentSender<Self>) {
         match msg {
             UIMessage::ButtonPress(scan_code) => {
-                self.keyboard_handle.key_press(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .key_press(evdev::KeyCode::new(scan_code));
             }
             UIMessage::ButtonRelease(scan_code) => {
-                self.keyboard_handle.key_release(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .key_release(evdev::KeyCode::new(scan_code));
             }
             UIMessage::ModPress(scan_code) => {
-                self.keyboard_handle.append_mod(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .append_mod(evdev::KeyCode::new(scan_code));
             }
             UIMessage::ModRelease(scan_code) => {
-                self.keyboard_handle.remove_mod(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .remove_mod(evdev::KeyCode::new(scan_code));
             }
             UIMessage::LockPress(scan_code) => {
-                self.keyboard_handle.append_lock(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .append_lock(evdev::KeyCode::new(scan_code));
             }
             UIMessage::LockRelease(scan_code) => {
-                self.keyboard_handle.remove_lock(evdev::Key::new(scan_code));
+                self.keyboard_handle
+                    .remove_lock(evdev::KeyCode::new(scan_code));
             }
             UIMessage::AppQuit => {
                 self.keyboard_handle.destroy();
