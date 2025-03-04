@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Wkeys Applet
+Type=Application
+Exec=cosmic-applet-wkeys
+Terminal=true
+Categories=COSMIC;
+Keywords=COSMIC;Iced;
+Icon=input-keyboard--symbolic
+StartupNotify=true
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicHoverPopup=End
+X-OverflowPriority=10
