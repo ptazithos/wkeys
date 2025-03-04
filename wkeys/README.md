@@ -1,15 +1,12 @@
 # Wkeys
 An on-screen keyboard for wayland desktop written by rust using GTK-rs.
 
-**Notice: Wkeys requires your wayland wm support [Virtual keyboard](https://wayland.app/protocols/virtual-keyboard-unstable-v1) and [wlr layer shell](https://wayland.app/protocols/wlr-layer-shell-unstable-v1)**
+![Screenshot](../assets/wkeys.png)
 
-![Default Layout](./assets/default.png)
+Notice: Wkeys requires your wayland wm support [Virtual keyboard](https://wayland.app/protocols/virtual-keyboard-unstable-v1) and [wlr layer shell](https://wayland.app/protocols/wlr-layer-shell-unstable-v1)
 
 ## Installation
-#### [NEW] nix:
-
-Global installation:
-
+### Nix:
 Add to your `flake.nix`:
 ```nix
     inputs.wkeys.url =  "github:ptazithos/wkeys";
@@ -24,21 +21,24 @@ then somewhere in `configuration.nix`:
 (define "system" somewhere, ideally in `flake.nix`)
 
 
-#### Cargo
+### Cargo:
 
 ```shell
 cargo install wkeys
 ```
 
-#### [NEW] Build from Source (nix)
+## Build from srouce
+
+### Nix:
 clone the repo and `nix build` (not `nix-build` since this is a flake repo). Dependencies will automatically install specifically for this project:
 ```shell
 git clone https://github.com/ptazithos/wkeys.git
+cd wkeys
 nix-build
 ```
 The generated files will appear in a symlink `result`.  
 
-#### Build from Source
+### Cargo:
 Install dependencies, taking Arch Linux as an example.
 ```shell
 paru gtk4 gtk4-layer-shell
@@ -46,6 +46,7 @@ paru gtk4 gtk4-layer-shell
 Build project.
 ```shell
 git clone https://github.com/ptazithos/wkeys.git
+cd wkeys
 cargo Build 
 ```
 
