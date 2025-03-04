@@ -3,7 +3,7 @@ use cosmic::iced::Result;
 
 mod applet;
 fn main() -> Result {
-    tracing_subscriber::fmt().with_writer(non_blocking).init();
+    tracing_subscriber::fmt::init();
     cosmic::applet::run::<Applet>(())?;
 
     Ok(())
