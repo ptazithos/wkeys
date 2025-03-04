@@ -1,7 +1,7 @@
 # Cosmic Applet Wkeys
 A cosmic applet for wkeys written by rust using libcosmic
 
-![Screenshot](../assets/wkeys.png)
+![Screenshot](../assets/wkeys.gif)
 
 ## Build from Source
 ```shell

@@ -4,7 +4,7 @@ An on-screen keyboard for wayland desktop and a corresponding Cosmic applet writ
 [wkeys](./wkeys/README.md) | [cosmic applet](./cosmic-applet/README.md)
 
 
-![Screenshot](./assets/wkeys.png)
+![Screenshot](./assets/wkeys.gif)
 
 ## Installation
 #### Install from AUR 
