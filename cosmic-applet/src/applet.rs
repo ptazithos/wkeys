@@ -57,14 +57,12 @@ impl cosmic::Application for Applet {
             AppletMessage::ToggleWkeys => {
                 if self.is_toggled {
                     let res = Command::new("wkeys")
-                        .env("PATH", "/home/tazi/.cargo/bin/")
                         .arg("--message")
                         .arg("close")
                         .spawn();
                     info!("start wkeys {:?}", res);
                 } else {
                     let res = Command::new("wkeys")
-                        .env("PATH", "/home/tazi/.cargo/bin/")
                         .spawn();
                     info!("end wkeys {:?}", res);
                 }
