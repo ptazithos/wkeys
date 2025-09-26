@@ -91,6 +91,7 @@ impl SimpleComponent for UIModel {
         window.set_height_request(window_height);
 
         window.init_layer_shell();
+        window.set_namespace(Some("wkeys"));
         window.set_layer(Layer::Overlay);
         window.set_keyboard_mode(KeyboardMode::None);
 
