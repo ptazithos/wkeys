@@ -49,7 +49,7 @@ impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N
 
     pub fn run(self) {
         info!("Starting UI.");
-        self.ui_handle.run::<UIModel>((
+        self.ui_handle.with_args(vec![]).run::<UIModel>((
             Box::new(self.keyboard_handle),
             Box::new(self.ipc_handle),
             self.layout_definition,
