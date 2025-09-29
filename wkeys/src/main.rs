@@ -34,7 +34,7 @@ fn main() {
         })
         .unwrap();
 
-        let app_config = AppConfig::default();
+        let app_config = AppConfig::new(args.layout.clone(), args.style.clone());
         let user_layout = LayoutDefinition::from_toml(&app_config.get_layout_file_content());
         let user_style = app_config.get_css_file_content();
 
