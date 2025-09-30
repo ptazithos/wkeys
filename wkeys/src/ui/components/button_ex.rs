@@ -59,6 +59,22 @@ impl ObjectImpl for ButtonInner {
         });
 
         obj.add_controller(gesture);
+
+        let stylus = gtk::GestureStylus::new();
+
+        let obj_up_cb = obj.clone();
+        stylus.connect_up(move |stylus, _, _| {
+            stylus.set_state(gtk::EventSequenceState::Claimed);
+            obj_up_cb.emit_by_name::<()>("released", &[]);
+        });
+        
+        let obj_down_cb = obj.clone();
+        stylus.connect_down(move |stylus, _, _| {
+            stylus.set_state(gtk::EventSequenceState::Claimed);
+            obj_down_cb.emit_by_name::<()>("pressed", &[]);
+        });
+
+        obj.add_controller(stylus);
     }
 
     fn signals() -> &'static [Signal] {
