@@ -4,6 +4,7 @@ use tracing::info;
 use crate::{
     layout::parse::LayoutDefinition,
     ui::{UIMessage, UIModel},
+    ProgramArgs,
 };
 
 use super::IPCHandle;
@@ -26,6 +27,7 @@ pub struct AppService<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static
     keyboard_handle: M,
     ipc_handle: N,
     layout_definition: LayoutDefinition,
+    args: ProgramArgs,
 }
 
 impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N> {
@@ -34,6 +36,7 @@ impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N
         ipc_handle: N,
         layout_definition: LayoutDefinition,
         styles: String,
+        args: ProgramArgs,
     ) -> Self {
         let ui = RelmApp::new("net.pithos.wkeys");
 
@@ -44,6 +47,7 @@ impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N
             keyboard_handle,
             ipc_handle: ipc_handle,
             layout_definition,
+            args,
         }
     }
 
@@ -53,6 +57,7 @@ impl<M: KeyboardHandle + 'static, N: IPCHandle + Send + 'static> AppService<M, N
             Box::new(self.keyboard_handle),
             Box::new(self.ipc_handle),
             self.layout_definition,
+            self.args,
         ));
     }
 }
