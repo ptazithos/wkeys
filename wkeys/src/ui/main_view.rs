@@ -250,5 +250,5 @@ impl SimpleComponent for UIModel {
 }
 
 fn cal_geometry_unit(length: i32, count: i32) -> i32 {
-    length / count
+    std::cmp::max(length / count, 64)
 }
