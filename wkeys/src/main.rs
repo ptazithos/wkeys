@@ -40,7 +40,7 @@ fn main() {
 
         let keyboard = VirtualKeyboard::new();
 
-        AppService::new(keyboard, ipc, user_layout, user_style).run();
+        AppService::new(keyboard, ipc, user_layout, user_style, args).run();
         info!("App Service Exiting.");
     } else {
         info!("Starting message service.");

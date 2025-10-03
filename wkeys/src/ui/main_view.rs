@@ -1,8 +1,7 @@
 use std::thread;
 
 use gdk4::{
-    prelude::{DisplayExt, ListModelExtManual, MonitorExt, ObjectExt},
-    Monitor,
+    prelude::{ObjectExt},
 };
 use gtk::prelude::{ApplicationExt, BoxExt, GtkWindowExt, ToggleButtonExt, WidgetExt};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
@@ -12,6 +11,8 @@ use tracing::info;
 use crate::{
     layout::parse::{KeyType, LayoutDefinition},
     service::{host::KeyboardHandle, IPCHandle},
+    ui::main_view::gtk::Label,
+    ProgramArgs,
 };
 
 use super::components::ButtonEX;
@@ -36,6 +37,7 @@ impl SimpleComponent for UIModel {
         Box<dyn KeyboardHandle>,
         Box<dyn IPCHandle + Send>,
         LayoutDefinition,
+        ProgramArgs,
     );
 
     type Input = UIMessage;
@@ -70,34 +72,14 @@ impl SimpleComponent for UIModel {
             }
         });
 
-        // Get the height of the smallest monitor.
-        let screen_height = if let Some(display) = gdk4::Display::default() {
-            let monitors = display.monitors();
-
-            monitors
-                .iter::<Monitor>()
-                .map(|monitor| {
-                    let monitor = monitor.unwrap();
-                    monitor.geometry().height()
-                })
-                .min()
-                .unwrap_or(1080)
-        } else {
-            1080
-        };
-
-        let window_height = screen_height / 4;
-
-        window.set_height_request(window_height);
-
         window.init_layer_shell();
         window.set_namespace(Some("wkeys"));
         window.set_layer(Layer::Overlay);
         window.set_keyboard_mode(KeyboardMode::None);
 
         let anchors = [
-            (Edge::Left, true),
-            (Edge::Right, true),
+            (Edge::Left, false),
+            (Edge::Right, false),
             (Edge::Top, false),
             (Edge::Bottom, true),
         ];
@@ -122,7 +104,7 @@ impl SimpleComponent for UIModel {
         container.set_expand(true);
 
         let keyboard_definition = handle.2;
-        let geometry_unit = cal_geometry_unit(window_height, keyboard_definition.height);
+        let geometry_unit = handle.3.height;
 
         keyboard_definition.layout.iter().for_each(|row| {
             let row_container = gtk::Box::builder()
@@ -180,27 +162,35 @@ impl SimpleComponent for UIModel {
                         row_container.append(&toggle);
                     }
                     KeyType::Normal => {
-                        let button = ButtonEX::default();
 
-                        button.set_primary_content(key.top_legend.clone().unwrap_or_default());
-                        button.set_secondary_content(key.bottom_legend.clone().unwrap_or_default());
+                        if scan_code == 0 {
+                            let label = Label::default();
+                            label.set_width_request(width);
+                            row_container.append(&label);
+                        }
+                        else {
+                            let button = ButtonEX::default();
 
-                        button.set_width_request(width);
-                        button.set_height_request(geometry_unit);
+                            button.set_primary_content(key.top_legend.clone().unwrap_or_default());
+                            button.set_secondary_content(key.bottom_legend.clone().unwrap_or_default());
 
-                        let press_sender = sender.clone();
-                        button.connect("pressed", true, move |_| {
-                            press_sender.input(UIMessage::ButtonPress(scan_code));
-                            None
-                        });
+                            button.set_width_request(width);
+                            button.set_height_request(geometry_unit);
+                            
+                            let press_sender = sender.clone();
+                            button.connect("pressed", true, move |_| {
+                                press_sender.input(UIMessage::ButtonPress(scan_code));
+                                None
+                            });
 
-                        let release_sender = sender.clone();
-                        button.connect("released", true, move |_| {
-                            release_sender.input(UIMessage::ButtonRelease(scan_code));
-                            None
-                        });
+                            let release_sender = sender.clone();
+                            button.connect("released", true, move |_| {
+                                release_sender.input(UIMessage::ButtonRelease(scan_code));
+                                None
+                            });
 
-                        row_container.append(&button);
+                            row_container.append(&button);
+                        }
                     }
                 }
             });
@@ -247,8 +237,4 @@ impl SimpleComponent for UIModel {
     }
 
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {}
-}
-
-fn cal_geometry_unit(length: i32, count: i32) -> i32 {
-    std::cmp::max(length / count, 64)
 }
