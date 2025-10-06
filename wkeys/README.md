@@ -14,12 +14,21 @@ Add to your `flake.nix`:
 
 then somewhere in `configuration.nix`:
 ```nix
-  environment.systemPackages = with pkgs; [
-    inputs.wkeys.packages.${system}.default
-  ]
+    environment.systemPackages = [
+        inputs.wkeys.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ]
 ```
-(define "system" somewhere, ideally in `flake.nix`)
 
+or use the overlay:
+```nix
+    nixpkgs.overlays = [
+        inputs.wkeys.overlays.wkeys
+    ];
+
+    environment.systemPackages = [
+        pkgs.wkeys
+    ];
+```
 
 ### Cargo:
 
