@@ -4,4 +4,4 @@ members = ["wkeys", "cosmic-applet"]
 
 [workspace.dependencies]
 tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
+tracing-subscriber = "0.3.20"
