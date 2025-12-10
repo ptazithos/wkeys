@@ -1,4 +1,4 @@
-name: Rust
+name: Build
 
 on:
   push:
@@ -16,5 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-4-dev libglib2.0-dev libgtk4-layer-shell-dev pkg-config
+    
     - name: Build
       run: cargo build --verbose
