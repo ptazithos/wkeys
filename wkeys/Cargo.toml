@@ -17,7 +17,7 @@ serde = { version = "1.0.214", features = ["derive"] }
 gtk4-layer-shell = "0.5.0"
 relm4 = "0.9.1"
 rust-embed = "8.7.2"
-toml = "0.8.19"
+toml = "0.9.8"
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 wayland-client = "0.31.7"
