@@ -111,7 +111,7 @@ impl VirtualKeyboard {
     fn map_mod_key(key: evdev::KeyCode) -> u32 {
         match key {
             evdev::KeyCode::KEY_LEFTCTRL | evdev::KeyCode::KEY_RIGHTCTRL => 4,
-            evdev::KeyCode::KEY_LEFTMETA | evdev::KeyCode::KEY_RIGHTMETA => 4,
+            evdev::KeyCode::KEY_LEFTMETA | evdev::KeyCode::KEY_RIGHTMETA => 64,
             evdev::KeyCode::KEY_LEFTSHIFT | evdev::KeyCode::KEY_RIGHTSHIFT => 1,
             evdev::KeyCode::KEY_LEFTALT | evdev::KeyCode::KEY_RIGHTALT => 8,
             _ => 0,
