@@ -1162,7 +1162,7 @@ dependencies = [
  "serde",
  "tokio",
  "tracing",
- "xdg 3.0.0",
+ "xdg",
  "zbus 5.12.0",
 ]
 
@@ -1186,7 +1186,7 @@ dependencies = [
  "memmap2 0.9.9",
  "thiserror 2.0.17",
  "tracing",
- "xdg 3.0.0",
+ "xdg",
 ]
 
 [[package]]
@@ -6945,7 +6945,7 @@ dependencies = [
  "tracing-subscriber",
  "wayland-client",
  "wayland-protocols-misc",
- "xdg 2.5.2",
+ "xdg",
  "xkbcommon 0.8.0",
 ]
 
@@ -7002,12 +7002,6 @@ name = "xcursor"
 version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bec9e4a500ca8864c5b47b8b482a73d62e4237670e5b5f1d6b9e3cae50f28f2b"
-
-[[package]]
-name = "xdg"
-version = "2.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "213b7324336b53d2414b2db8537e56544d981803139155afa84f76eeebb7a546"
 
 [[package]]
 name = "xdg"
